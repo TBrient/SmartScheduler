@@ -2,10 +2,7 @@ package alex.tyler.smartscheduler;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -16,7 +13,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, DashboardFragment.OnFragmentInteractionListener {
+        implements AddEventTabFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener, DashboardFragment.OnFragmentInteractionListener, AddHardEventFragment.OnFragmentInteractionListener, CalendarFragment.OnFragmentInteractionListener {
+
+    private DashboardFragment dashboardFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +33,9 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        DashboardFragment dashboardFragment = new DashboardFragment();
+        dashboardFragment = new DashboardFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom);
         fragmentTransaction.replace(R.id.fragmentContainer, dashboardFragment);
         fragmentTransaction.commit();
     }

@@ -3,28 +3,27 @@ package alex.tyler.smartscheduler;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link DashboardFragment.OnFragmentInteractionListener} interface
+ * {@link AddFlexEventFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link DashboardFragment#newInstance} factory method to
+ * Use the {@link AddFlexEventFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DashboardFragment extends Fragment {
+public class AddFlexEventFragment extends Fragment implements AdapterView.OnItemSelectedListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -36,7 +35,7 @@ public class DashboardFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public DashboardFragment() {
+    public AddFlexEventFragment() {
         // Required empty public constructor
     }
 
@@ -46,11 +45,11 @@ public class DashboardFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment DashboardFragment.
+     * @return A new instance of fragment AddFlexEventFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static DashboardFragment newInstance(String param1, String param2) {
-        DashboardFragment fragment = new DashboardFragment();
+    public static AddFlexEventFragment newInstance(String param1, String param2) {
+        AddFlexEventFragment fragment = new AddFlexEventFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -65,35 +64,20 @@ public class DashboardFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        View view = inflater.inflate(R.layout.fragment_add_flex_event, container, false);
+        ArrayList<String> possibleParameters = new ArrayList<>(Arrays.asList("Weather", "Location Hours"));
+        Spinner spin = (Spinner) view.findViewById(R.id.addParameter);
+        spin.setOnItemSelectedListener(this);
 
-        TextView dateView = (TextView)view.findViewById(R.id.dateTextView); //Gets a reference to the date view in the xml file.
+        ArrayAdapter<String> aa = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, possibleParameters);
+        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spin.setAdapter(aa);
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, MMMM d", Locale.US); //creates a simple date format which will format the calendar instance in a readable way
-        Date date = new Date();
-        dateView.setText(simpleDateFormat.format(date));
-
-        FloatingActionButton addEventfab = (FloatingActionButton)view.findViewById(R.id.addEventFab);
-
-        addEventfab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-                AddHardEventFragment addHardEventFragment = new AddHardEventFragment();
-                fragmentTransaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom);
-                fragmentTransaction.replace(R.id.fragmentContainer, addHardEventFragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-            }
-        });
-
-        // Inflate the layout for this fragment
         return view;
     }
 
@@ -119,6 +103,16 @@ public class DashboardFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        //TODO: add the panel for the selected thing
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 
     /**

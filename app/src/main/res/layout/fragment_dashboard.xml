@@ -13,7 +13,7 @@
         android:clickable="true"
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_fab_calendar"
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/addEventFab"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
