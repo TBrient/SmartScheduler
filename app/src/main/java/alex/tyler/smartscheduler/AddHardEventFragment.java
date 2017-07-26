@@ -1,12 +1,29 @@
 package alex.tyler.smartscheduler;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TimePicker;
+
+import org.w3c.dom.Text;
+
+import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 
 /**
@@ -60,10 +77,116 @@ public class AddHardEventFragment extends Fragment {
         }
     }
 
+    private void initializeCalendarPopup(final EditText dateText){
+        final Calendar cal = Calendar.getInstance();
+        updateLabel(dateText, cal);
+
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
+                cal.set(Calendar.YEAR, year);
+                cal.set(Calendar.MONTH, monthOfYear);
+                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel(dateText, cal);
+            }
+        };
+
+        dateText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                new DatePickerDialog(getActivity(), date, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+    }
+
+    private void updateLabel(EditText dateText, Calendar cal) {
+        String myFormat = "MM/dd/yy";
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+        dateText.setText(sdf.format(cal.getTime()));
+    }
+
+    private void initializeTimerPopup(final TextView timeText, final String title) {
+        timeText.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                Calendar mcurrentTime = Calendar.getInstance();
+                int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+                int minute = mcurrentTime.get(Calendar.MINUTE);
+                TimePickerDialog mTimePicker;
+                mTimePicker = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        timeText.setText( selectedHour + ":" + selectedMinute);
+                    }
+                }, hour, minute, false);
+                mTimePicker.setTitle(title);
+                mTimePicker.show();
+
+            }
+        });
+
+    }
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_hard_event, container, false);
+
+        final EditText nameField = (EditText)view.findViewById(R.id.EventName);
+        final EditText dateText = (EditText)view.findViewById(R.id.dateEditText);
+        initializeCalendarPopup(dateText);
+        final EditText locationField = (EditText)view.findViewById(R.id.locationEditText);
+        final EditText descriptionField = (EditText)view.findViewById(R.id.descriptionText);
+        final TextView startTime = (TextView)view.findViewById(R.id.startTime);
+        final TextView endTime = (TextView)view.findViewById(R.id.endTime);
+        initializeTimerPopup(startTime, "Select Starting Time");
+        initializeTimerPopup(endTime, "Select Ending Time");
+        final CheckBox allDayCheck = (CheckBox)view.findViewById(R.id.allDayCheckbox);
+        Button saveButton = (Button)view.findViewById(R.id.saveButton);
+        Button cancelButton = (Button)view.findViewById(R.id.cancelButton);
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO: Check required fields to make sure that they are there. (also rules like ending time shouldn't be b4 starting time)
+                Time startTimeFin;
+                Time endTimeFin;
+                if (allDayCheck.isChecked()) {
+                    startTimeFin = new Time(0, 0, 0); //TODO: Deprecated
+                    endTimeFin = new Time(23, 59, 59);
+
+                } else {
+                    String[] startTimeArr = startTime.getText().toString().split(":");
+                    String[] endTimeArr = endTime.getText().toString().split(":");
+                    startTimeFin = new Time(Integer.parseInt(startTimeArr[0]), Integer.parseInt(startTimeArr[1]), 0); //TODO: Deprecated
+                    endTimeFin = new Time(Integer.parseInt(endTimeArr[0]), Integer.parseInt(endTimeArr[1]), 0);
+                }
+                Date date;
+                //TODO: Sloppy may fix later
+                String dateTemp = dateText.getText().toString();
+                String[] dateArr = dateTemp.split("/");
+                Calendar c = Calendar.getInstance();
+                c.set(Integer.parseInt(dateArr[2]) + 2000, Integer.parseInt(dateArr[0]), Integer.parseInt(dateArr[1]));
+
+                DataStorage ds = ((MainActivity)getActivity()).getDataStorage();
+                ds.addEvent(new HardEvent(nameField.getText().toString(), descriptionField.getText().toString(), locationField.getText().toString(), c.getTime(), startTimeFin, endTimeFin));
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom);
+                fragmentTransaction.replace(R.id.fragmentContainer, ((MainActivity)getActivity()).getDashboardFragment());
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            }
+        });
 
         // Inflate the layout for this fragment
         return view;

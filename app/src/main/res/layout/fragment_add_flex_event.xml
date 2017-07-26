@@ -41,7 +41,8 @@
                 android:layout_weight="1"
                 android:layout_width="20dp"
                 android:backgroundTint="@color/grey300"
-                android:forceHasOverlappingRendering="true" />
+                android:forceHasOverlappingRendering="true"
+                android:spinnerMode="dialog" />
 
         </LinearLayout>
 

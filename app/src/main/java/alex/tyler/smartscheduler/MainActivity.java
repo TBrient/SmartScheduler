@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity
         implements AddEventTabFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener, DashboardFragment.OnFragmentInteractionListener, AddHardEventFragment.OnFragmentInteractionListener, CalendarFragment.OnFragmentInteractionListener {
 
     private DashboardFragment dashboardFragment;
+    private DataStorage dataStorage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        dataStorage = new DataStorage();
 
         dashboardFragment = new DashboardFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -100,5 +103,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    public DataStorage getDataStorage() {
+        return dataStorage;
+    }
+
+    public DashboardFragment getDashboardFragment() {
+        return dashboardFragment;
     }
 }
